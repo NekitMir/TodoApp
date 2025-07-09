@@ -1,0 +1,33 @@
+.wrapperSort {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 16px 0;
+}
+
+.lableSort {
+  font-size: 14px;
+  font-weight: 500;
+  color: #333;
+}
+
+.sortSelect {
+  width: 19%;
+  padding: 6px 10px;
+  border-radius: 6px;
+  font-size: 14px;
+
+  border: 1px solid #ccc;
+  background-color: #fff;
+  cursor: pointer;
+  transition: border-color 0.2s ease;
+}
+
+.sortSelect:hover {
+  border-color: #999;
+}
+
+.option {
+  background-color: #fff;
+  color: #333;
+}

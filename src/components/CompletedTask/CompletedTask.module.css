@@ -1,0 +1,44 @@
+.checkbox {
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  width: 20px;
+  height: 20px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  cursor: pointer;
+  position: relative;
+  transition: background-color 0.3s ease, border-color 0.3s ease,
+    box-shadow 0.3s ease;
+}
+
+.checkbox:hover {
+  background-color: rgba(144, 238, 144, 0.3); /* lightgreen с прозрачностью */
+  border-color: #4caf50;
+  box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.2),
+    /* мягкое свечение */ 0 2px 5px rgba(0, 0, 0, 0.1); /* легкая тень */
+  transform: scale(1.05);
+}
+
+.checkbox:checked {
+  background-color: #4caf50;
+}
+
+.checkbox:checked::after {
+  content: "";
+  position: absolute;
+  top: 2px;
+  left: 6px;
+  width: 5px;
+  height: 10px;
+  border: solid white;
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg);
+  transition: opacity 0.2s ease;
+}
+
+/* Анимация при клике */
+.checkbox:active {
+  transform: scale(0.95);
+  transition: transform 0.1s ease;
+}

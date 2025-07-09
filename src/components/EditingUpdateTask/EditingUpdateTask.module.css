@@ -1,0 +1,51 @@
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.todoItem {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 10px;
+  cursor: pointer;
+
+  border-bottom: 1px solid #e6e6e6;
+  background-color: white;
+  animation: fadeInUp 0.3s ease forwards;
+  opacity: 0;
+}
+
+.todoItem:last-child {
+  border-bottom: none;
+}
+
+.todoItem:hover {
+  background-color: #f5faff;
+}
+
+.todoText {
+  font-size: 16px;
+  flex: 1;
+  word-break: break-word;
+  color: #333;
+}
+
+.completed {
+  text-decoration: line-through;
+  color: #aaa;
+}
+
+.inputEdit {
+  flex: 1;
+  padding: 4px 8px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 14px;
+}
