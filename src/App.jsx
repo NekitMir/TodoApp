@@ -1,4 +1,3 @@
-import React from "react";
 import { TodoApp } from "./TodoApp";
 
 export function App() {

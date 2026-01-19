@@ -5,7 +5,7 @@ export const selectFilteredTodos = (debouncedSearchValue) => createSelector(
     (state) => state.todos.todos,
     (state) => state.todos.sortOrder
   ],
-  (todos, searchValue, sortOredr) => {
+  (todos, sortOredr) => {
     const filtered = todos.filter((todo) => todo.title.toLowerCase().includes(debouncedSearchValue.toLowerCase()))
 
     if(sortOredr === 'none') {

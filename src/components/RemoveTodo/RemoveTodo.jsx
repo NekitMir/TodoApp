@@ -10,7 +10,7 @@ import {
 import { useDispatch } from "react-redux";
 import { removeTodo } from "../../store/slices/todoSlice";
 
-export const RemoveTodo = ({ todo, setTodos, setSnackbar }) => {
+export const RemoveTodo = ({ todo, setSnackbar }) => {
   const [openDialog, setOpenDialg] = useState(false);
   const dispatch = useDispatch()
 

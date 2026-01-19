@@ -38,17 +38,10 @@ export const updatedTodo = createAsyncThunk(
   }
 )
 
-const snackbar = {
-  open: false,
-  message: "",
-  severity: "success",
-};
-
 const initialState = {
   todos: [],
   searchValue: "",
   sortOrder: "none",
-  snackbar,
   loading: false,
   error: null
 };
