@@ -1,45 +1,53 @@
 import React, { useState } from "react";
-import { getDatabase, ref, update } from "firebase/database";
+import { useDispatch } from "react-redux";
 
 import styles from "../EditingUpdateTask/EditingUpdateTask.module.css";
 import { CompletedTask } from "../CompletedTask/CompletedTask";
 import { RemoveTodo } from "../RemoveTodo/RemoveTodo";
+import { updatedTodo } from "../../store/slices/todoSlice";
 
-export const EditingUpdateTask = ({ todo, setTodos, setSnackbar}) => {
+export const EditingUpdateTask = ({ todo, setSnackbar}) => {
   const [editing, setEditing] = useState(false);
   const [editeValue, setEditeValue] = useState(todo.title);
+  const [isSaving, setIsSaving] = useState(false)
+  const dispatch = useDispatch()
 
-  const saveEdit = async () => {
-    if (editeValue === todo.title) {
-      setEditing(false);
-      return;
-    }
+  const handleSaveTodo = async () => {
+    if(isSaving ||editeValue === todo.title) return
+    setIsSaving(true)
     try {
-      const db = getDatabase();
-      const todoRef = ref(db, `todos/${todo.id}`);
-
-      const updateTodo = { ...todo, title: editeValue };
-
-      await update(todoRef, { title: editeValue });
-
-      setTodos((prevTodo) =>
-        prevTodo.map((item) => (item.id === todo.id ? updateTodo : item))
-      );
-
-      setEditing(false);
+      await dispatch(updatedTodo({todoId: todo.id, todoData: {title:editeValue}})).unwrap()
+      setSnackbar({
+        open: true,
+        message: "✔Задача обновлена",
+        severity: "success",
+      })
+      setEditing(false)
     } catch (error) {
-      console.error("Ошибка при редкатировании", error);
+      setSnackbar({
+        open: true,
+        message: 'Ошибка при обновлении задачи',
+        severity: 'error'
+      })
+    } 
+    finally {
+      setIsSaving(false)
     }
-  };
+  }
 
   const handleBlur = () => {
-    saveEdit();
+    setTimeout(() => {
+      if(!isSaving) {
+        handleSaveTodo();
+      }
+    }, 200)
+    
   };
 
   const handleEnterKeyDown = (event) => {
     if (event.key === "Enter") {
       event.preventDefault();
-      saveEdit();
+      handleSaveTodo();
     }
   };
 
@@ -68,8 +76,8 @@ export const EditingUpdateTask = ({ todo, setTodos, setSnackbar}) => {
           {todo.title}
         </span>
       )}
-      <CompletedTask todo={todo} setTodos={setTodos} />
-      <RemoveTodo todo={todo} setTodos={setTodos} setSnackbar={setSnackbar}/>
+      <CompletedTask todo={todo}/>
+      <RemoveTodo todo={todo} setSnackbar={setSnackbar}/>
     </li>
   );
 };

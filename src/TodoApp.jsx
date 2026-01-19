@@ -1,75 +1,49 @@
-import { useEffect, useState } from "react";
-import { ref, onValue } from "firebase/database";
+import { useEffect, useState, useMemo } from "react";
+import { useSelector, useDispatch } from "react-redux";
 import { Snackbar, Alert } from "@mui/material";
+import { fetchTodos, setSearchValue, setSortOrder } from "./store/slices/todoSlice";
 
 import styles from "./TodoApp_Css/TodoApp.module.css";
 
-import { db } from "./firebase";
 import { AddInput } from "./components/AddInput/AddInput";
 import { EditingUpdateTask } from "./components/EditingUpdateTask/EditingUpdateTask";
 import { SearchInput } from "./components/SearchInput/SearchInput";
 import { SortedTasks } from "./components/SortedTasks/SortedTasks";
+import { selectFilteredTodos } from "./store/slices/todoSelectors";
 import { useDebounce } from "./hooks/useDebonce";
 
 export function TodoApp() {
-  const [todos, setTodos] = useState([]);
-  const [searchValue, setSearchValue] = useState("");
-  const debounceSearch = useDebounce(searchValue, 300);
-  const [sortOrder, setSortOrder] = useState("none");
+  const todos = useSelector((state) => state.todos.todos)
+  const dispatch = useDispatch()
+  const searchValue = useSelector((state) => state.todos.searchValue) 
+  const debounceSearchValue = useDebounce(searchValue, 300);
+  const sortOrder = useSelector((state) => state.todos.sortOrder)
+
+  const filteredTasks = useSelector(useMemo(() => 
+    selectFilteredTodos(debounceSearchValue), [debounceSearchValue]))
   const [snackbar, setSnackbar] = useState({
     open: false,
     message: "",
     severity: "success",
-  });
-
+  });  // Выносим в сторе, как initialState
+  
   useEffect(() => {
-    const todosRef = ref(db, "todos");
-
-    const unsubscribe = onValue(todosRef, (snapshot) => {
-      const data = snapshot.val();
-
-      if (data) {
-        const todosArray = Object.entries(data).map(([id, todo]) => ({
-          id,
-          ...todo,
-        }));
-        setTodos(todosArray);
-      } else {
-        setTodos([]);
-      }
-    });
-
-    return () => unsubscribe();
-  }, []);
-
-  const filteredTasks = todos
-    .filter((todo) =>
-      todo.title.toLowerCase().includes(debounceSearch.toLowerCase())
-    )
-    .sort((a, b) => {
-      if (sortOrder === "none") return 0;
-
-      const titleA = a.title.toLowerCase();
-      const titleB = b.title.toLowerCase();
-
-      return sortOrder === "asc"
-        ? titleA.localeCompare(titleB)
-        : titleB.localeCompare(titleA);
-    });
+    dispatch(fetchTodos())
+  }, [dispatch])
 
   return (
     <>
-      <AddInput todos={todos} setTodos={setTodos} />
-      <SearchInput searchValue={searchValue} setSearchValue={setSearchValue} />
-      <SortedTasks sortOrder={sortOrder} setSortOrder={setSortOrder} />
+      <AddInput />
+      <SearchInput searchValue={searchValue} setSearchValue={(value) => dispatch(setSearchValue(value))} />
+      <SortedTasks sortOrder={sortOrder} setSortOrder={(value) => dispatch(setSortOrder(value))} />
       {todos.length === 0 ? (
         <span className={styles.noTasks}>Задачи не найдены</span>
       ) : (
         <ul className={styles.todoList}>
           {filteredTasks.map((todo) => (
             <EditingUpdateTask
+              key={todo.id}
               todo={todo}
-              setTodos={setTodos}
               setSnackbar={setSnackbar}
             />
           ))}

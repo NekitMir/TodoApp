@@ -1,4 +1,3 @@
-import { getDatabase, ref, remove } from "firebase/database";
 import { useState } from "react";
 import {
   Dialog,
@@ -8,33 +7,34 @@ import {
   DialogTitle,
   Button,
 } from "@mui/material";
+import { useDispatch } from "react-redux";
+import { removeTodo } from "../../store/slices/todoSlice";
 
 export const RemoveTodo = ({ todo, setTodos, setSnackbar }) => {
   const [openDialog, setOpenDialg] = useState(false);
+  const dispatch = useDispatch()
 
-  const removeTodo = async () => {
+
+  const removedTodo = async () => {
     try {
-      const db = getDatabase();
-      const todoRef = ref(db, `todos/${todo.id}`);
-      await remove(todoRef);
-      setTodos((prevTodo) => prevTodo.filter((item) => item.id !== todo.id));
-
+      await  dispatch(removeTodo(todo.id)).unwrap()
       setSnackbar({
         open: true,
         message: "✔Задача удалена",
         severity: "success",
       });
+      setOpenDialg(false)
     } catch (error) {
-      console.error("Ошибка при удалении задачи", error);
       setSnackbar({
         open: true,
         message: "Ошибка при удалении",
         severity: "error",
       });
-    } finally {
-      setOpenDialg(false);
     }
-  };
+    finally {
+      setOpenDialg(false)
+    }
+  }
 
   return (
     <>
@@ -68,7 +68,7 @@ export const RemoveTodo = ({ todo, setTodos, setSnackbar }) => {
           >
             Отмена
           </Button>
-          <Button onClick={removeTodo} color="error" autoFocus>
+          <Button onClick={removedTodo} color="error" autoFocus>
             Удалить
           </Button>
         </DialogActions>

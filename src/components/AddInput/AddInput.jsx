@@ -1,36 +1,27 @@
 import { useState } from "react";
+import { useDispatch } from "react-redux";
 
-import { getDatabase, ref, push } from "firebase/database";
+import { createTodo } from "../../store/slices/todoSlice";
 
 import styles from "../AddInput/AddInput.module.css";
 import { Button } from "../Button/Button";
 
-export const AddInput = ({ todos, setTodos }) => {
+export const AddInput = () => {
   const [value, setValue] = useState("");
 
+  const dispatch = useDispatch()
+
   const addTodo = async () => {
-    if (!value.trim()) return;
-    try {
-      const db = getDatabase();
-      const todosRef = ref(db, "todos");
+    if(!value.trim()) return
 
-      const newTodoRef = await push(todosRef, {
-        title: value,
-        completed: false,
-      });
-
-      const newTodo = {
-        id: newTodoRef.key,
-        title: value,
-        completed: false,
-      };
-
-      setTodos([...todos, newTodo]);
-      setValue("");
-    } catch (error) {
-      console.error("Ошибка при добавлении задачи", error);
+    const newTodo = {
+      title: value,
+      completed: false
     }
-  };
+
+    dispatch(createTodo(newTodo))
+    setValue('')
+  }
 
   const addTodoEnter = (event) => {
     if (event.key === "Enter") {
